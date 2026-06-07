@@ -1,0 +1,132 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #312e81
+    );
+    padding:20px;
+}
+
+.container{
+    width:500px;
+    padding:25px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.1);
+    color:white;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.input-box{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+input,
+select{
+    padding:12px;
+    border:none;
+    border-radius:10px;
+}
+
+button{
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+#addBtn{
+    background:#06b6d4;
+    color:white;
+}
+
+#themeBtn{
+    background:#f59e0b;
+    color:white;
+}
+
+.filters{
+    display:flex;
+    gap:10px;
+    margin:15px 0;
+}
+
+.filters button{
+    flex:1;
+}
+
+ul{
+    list-style:none;
+}
+
+li{
+    margin-top:10px;
+    padding:12px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.1);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.task-text{
+    font-weight:bold;
+}
+
+.completed .task-text{
+    text-decoration:line-through;
+    opacity:0.6;
+}
+
+.actions{
+    display:flex;
+    gap:5px;
+}
+
+.complete-btn{
+    background:#22c55e;
+    color:white;
+}
+
+.delete-btn{
+    background:#ef4444;
+    color:white;
+}
+
+#taskCount{
+    margin-top:15px;
+    text-align:center;
+}
+
+small{
+    opacity:0.8;
+}
+
+.light-mode{
+    background:#f3f4f6;
+}
+
+.light-mode .container{
+    background:white;
+    color:black;
+}
