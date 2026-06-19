@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Visualizer</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-color: #1e293b;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--card-color);
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 2px solid #334155;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #334155;
+            color: var(--text-main);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-panel {
+            background-color: var(--card-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .complexity-card {
+            background-color: var(--card-color);
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .complexity-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .complexity-val {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            background: #334155;
+            border: 1px solid #475569;
+            color: var(--text-main);
+            padding: 0.6rem;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        input {
+            width: 110px;
+        }
+
+        select {
+            width: 90px;
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background-color: #475569;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .action-btn.primary {
+            background-color: var(--accent-color);
+        }
+
+        .action-btn.danger {
+            background-color: var(--danger-color);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .visualizer-container {
+            background-color: var(--card-color);
+            min-height: 280px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            overflow-x: auto;
+        }
+
+        .node {
+            width: 60px;
+            height: 60px;
+            background-color: #475569;
+            border: 3px solid #64748b;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+
+        .node .index {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .node .label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.8rem;
+            color: var(--warning-color);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .node.active-check {
+            background-color: var(--warning-color);
+            border-color: #d97706;
+            transform: scale(1.1);
+            color: #000;
+        }
+
+        .node.success-match {
+            background-color: var(--success-color);
+            border-color: #059669;
+            transform: scale(1.15);
+        }
+
+        .node.danger {
+            background-color: var(--danger-color);
+            border-color: #b91c1c;
+            transform: scale(1.1);
+        }
+
+        .node.eliminated {
+            opacity: 0.2;
+            transform: scale(0.85);
+        }
+
+        .stack-layout {
+            flex-direction: column-reverse;
+            justify-content: flex-end;
+        }
+
+        .stack-layout .node .index {
+            left: -35px;
+            bottom: unset;
+        }
+
+        #status-msg {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--warning-color);
+            min-height: 1.5rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>DSA Visualizer</h1>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchDS('array')">Array</button>
+            <button class="tab-btn" onclick="switchDS('stack')">Stack</button>
+            <button class="tab-btn" onclick="switchDS('queue')">Queue</button>
+            <button class="tab-btn" onclick="switchDS('linear')">Linear Search</button>
+            <button class="tab-btn" onclick="switchDS('binary')">Binary Search</button>
+            <button class="tab-btn" onclick="switchDS('bubble')">Bubble Sort</button>
+            <button class="tab-btn" onclick="switchDS('selection')">Selection Sort</button>
+            <button class="tab-btn" onclick="switchDS('insertion')">Insertion Sort</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="meta-grid">
+            <div class="control-panel" id="controls"></div>
+            <div class="complexity-card" id="complexity-box"></div>
+        </div>
+
+        <div class="visualizer-container" id="display-container"></div>
+
+        <div id="status-msg">Select a data structure or algorithm to get started.</div>
+    </main>
+
+    <script>
+        let currentDS = 'array';
+        let data = [];
+        let isAnimating = false;
+        let speedMultiplier = 1;
+
+        const complexitySpecs = {
+            array: { time: 'O(n) for insertion/deletion', space: 'O(n)' },
+            stack: { time: 'O(1) Push/Pop', space: 'O(n)' },
+            queue: { time: 'O(1) Enqueue/Dequeue', space: 'O(n)' },
+            linear: { time: 'O(n) Worst Case', space: 'O(1)' },
+            binary: { time: 'O(log n) Best Case (Requires Sorted)', space: 'O(1)' },
+            bubble: { time: 'O(n²)', space: 'O(1)' },
+            selection: { time: 'O(n²)', space: 'O(1)' },
+            insertion: { time: 'O(n²)', space: 'O(1)' }
+        };
+
+        const controls = document.getElementById('controls');
+        const container = document.getElementById('display-container');
+        const statusMsg = document.getElementById('status-msg');
+        const complexityBox = document.getElementById('complexity-box');
+
+        const displayNames = {
+            array: 'Array', stack: 'Stack', queue: 'Queue', linear: 'Linear Search',
+            binary: 'Binary Search', bubble: 'Bubble Sort', selection: 'Selection Sort', insertion: 'Insertion Sort'
+        };
+
+        function switchDS(type) {
+            if (isAnimating) return;
+            currentDS = type;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                let normBtn = btn.innerText.toLowerCase().replace(" search", "").replace(" sort", "");
+                btn.classList.toggle('active', normBtn === type);
+            });
+
+            if (type === 'binary') {
+                data = [12, 22, 34, 45, 57, 68, 71, 85, 99];
+            } else if (['bubble', 'selection', 'insertion', 'linear'].includes(type)) {
+                data = [54, 12, 89, 34, 67, 21];
+            } else if (type === 'stack' || type === 'queue') {
+                data = [10, 20, 30];
+            } else {
+                data = [35, 12, 78, 46, 23];
+            }
+
+            renderControls();
+            renderComplexity();
+            renderData();
+            updateStatus(`Switched to ${displayNames[type]}`);
+        }
+
+        function updateStatus(msg) { statusMsg.innerText = msg; }
+
+        function changeSpeed(val) { speedMultiplier = parseFloat(val); }
+
+        function renderComplexity() {
+            const spec = complexitySpecs[currentDS];
+            complexityBox.innerHTML = `
+                <div class="complexity-row"><span>Time Complexity:</span><span class="complexity-val">${spec.time}</span></div>
+                <div class="complexity-row"><span>Space Complexity:</span><span class="complexity-val">${spec.space}</span></div>
+            `;
+        }
+
+        function renderControls() {
+            let speedSelectorHTML = `
+                <select id="speedSelect" onchange="changeSpeed(this.value)">
+                    <option value="2">0.5x</option>
+                    <option value="1" selected>1.0x</option>
+                    <option value="0.5">2.0x</option>
+                </select>
+            `;
+
+            let actionHTML = '';
+            if (currentDS === 'array') {
+                actionHTML = `
+                    <input type="number" id="valInput" placeholder="Value">
+                    <input type="number" id="idxInput" placeholder="Index">
+                    <button class="action-btn primary" onclick="arrayInsert()">Insert</button>
+                    <button class="action-btn danger" onclick="arrayDelete()">Delete At</button>
+                `;
+            } else if (currentDS === 'stack') {
+                actionHTML = `
+                    <input type="number" id="valInput" placeholder="Value">
+                    <button class="action-btn primary" onclick="stackPush()">Push</button>
+                    <button class="action-btn danger" onclick="stackPop()">Pop</button>
+                `;
+            } else if (currentDS === 'queue') {
+                actionHTML = `
+                    <input type="number" id="valInput" placeholder="Value">
+                    <button class="action-btn primary" onclick="queueEnqueue()">Enqueue</button>
+                    <button class="action-btn danger" onclick="queueDequeue()">Dequeue</button>
+                `;
+            } else if (currentDS === 'linear' || currentDS === 'binary') {
+                actionHTML = `
+                    <input type="number" id="valInput" placeholder="Target">
+                    <button class="action-btn primary" onclick="runSearch()">Search</button>
+                `;
+            } else if (['bubble', 'selection', 'insertion'].includes(currentDS)) {
+                actionHTML = `<button class="action-btn primary" onclick="runSorting()">Sort Array</button>`;
+            }
+            controls.innerHTML = actionHTML + speedSelectorHTML;
+        }
+
+        function renderData(labels = {}) {
+            container.innerHTML = '';
+            container.classList.toggle('stack-layout', currentDS === 'stack');
+
+            data.forEach((val, idx) => {
+                const node = document.createElement('div');
+                node.className = 'node';
+                node.id = `node-${idx}`;
+                node.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
+
+                if (labels[idx]) {
+                    const labelSpan = document.createElement('span');
+                    labelSpan.className = 'label';
+                    labelSpan.innerText = labels[idx];
+                    node.appendChild(labelSpan);
+                }
+                container.appendChild(node);
+            });
+        }
+
+        const getSleepTime = (baseMs) => baseMs * speedMultiplier;
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+        function setUILock(lock) {
+            isAnimating = lock;
+            document.querySelectorAll('.action-btn, .tab-btn, #speedSelect').forEach(el => el.disabled = lock);
+        }
+
+        function arrayInsert() {
+            const val = parseInt(document.getElementById('valInput').value);
+            const idx = parseInt(document.getElementById('idxInput').value);
+            if (isNaN(val) || isNaN(idx) || idx < 0 || idx > data.length) return updateStatus("Invalid input or index.");
+            data.splice(idx, 0, val);
+            renderData();
+        }
+
+        function arrayDelete() {
+            const idx = parseInt(document.getElementById('idxInput').value);
+            if (isNaN(idx) || idx < 0 || idx >= data.length) return updateStatus("Invalid index.");
+            data.splice(idx, 1);
+            renderData();
+        }
+
+        function stackPush() {
+            const val = parseInt(document.getElementById('valInput').value);
+            if (isNaN(val)) return;
+            data.push(val);
+            renderData({ [data.length - 1]: 'Top' });
+        }
+
+        async function stackPop() {
+            if (data.length === 0) return updateStatus("Stack Underflow!");
+            setUILock(true);
+            renderData({ [data.length - 1]: 'Popping!' });
+            document.getElementById(`node-${data.length - 1}`).classList.add('danger');
+            await sleep(getSleepTime(600));
+            data.pop();
+            renderData(data.length ? { [data.length - 1]: 'Top' } : {});
+            setUILock(false);
+        }
+
+        function queueEnqueue() {
+            const val = parseInt(document.getElementById('valInput').value);
+            if (isNaN(val)) return;
+            data.push(val);
+            renderData({ 0: 'Front', [data.length - 1]: data.length === 1 ? 'Front/Rear' : 'Rear' });
+        }
+
+        async function queueDequeue() {
+            if (data.length === 0) return updateStatus("Queue Underflow!");
+            setUILock(true);
+            renderData({ 0: 'Dequeuing!', [data.length - 1]: 'Rear' });
+            document.getElementById('node-0').classList.add('danger');
+            await sleep(getSleepTime(600));
+            data.shift();
+            renderData(data.length ? { 0: 'Front', [data.length - 1]: data.length === 1 ? 'Front/Rear' : 'Rear' } : {});
+            setUILock(false);
+        }
+
+        async function runSearch() {
+            const target = parseInt(document.getElementById('valInput').value);
+            if (isNaN(target)) return updateStatus("Please enter a valid search number.");
+            setUILock(true);
+            if (currentDS === 'linear') await linearSearch(target);
+            else if (currentDS === 'binary') await binarySearch(target);
+            setUILock(false);
+        }
+
+        async function linearSearch(target) {
+            updateStatus("Searching...");
+            let found = false;
+            for (let i = 0; i < data.length; i++) {
+                renderData({ [i]: 'Checking' });
+                const node = document.getElementById(`node-${i}`);
+                node.classList.add('active-check');
+
+                updateStatus(`Comparing index ${i} (${data[i]}) with target ${target}`);
+                await sleep(getSleepTime(1000));
+
+                if (data[i] === target) {
+                    node.className = 'node success-match';
+                    updateStatus(`Found target ${target} at index ${i}!`);
+                    found = true;
+                    break;
+                }
+                node.classList.remove('active-check');
+                node.classList.add('eliminated');
+            }
+            if (!found) updateStatus("Element not found");
+        }
+
+        async function binarySearch(target) {
+            updateStatus("Searching...");
+            let low = 0, high = data.length - 1, found = false;
+            while (low <= high) {
+                let mid = Math.floor((low + high) / 2);
+                renderData({ [low]: 'Low', [high]: 'High', [mid]: 'Mid' });
+
+                for (let i = 0; i < data.length; i++) if (i < low || i > high) document.getElementById(`node-${i}`).classList.add('eliminated');
+
+                const midNode = document.getElementById(`node-${mid}`);
+                midNode.classList.add('active-check');
+                updateStatus(`Comparing middle element index ${mid} (${data[mid]}) with target ${target}`);
+                await sleep(getSleepTime(1000));
+
+                if (data[mid] === target) {
+                    midNode.className = 'node success-match';
+                    updateStatus(`Found target ${target} at index ${mid}!`);
+                    found = true; break;
+                } else if (data[mid] < target) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (!found) {
+                renderData();
+                data.forEach((_, i) => document.getElementById(`node-${i}`).classList.add('eliminated'));
+                updateStatus("Element not found");
+            }
+        }
+
+        async function runSorting() {
+            setUILock(true);
+            if (currentDS === 'bubble') await bubbleSort();
+            else if (currentDS === 'selection') await selectionSort();
+            else if (currentDS === 'insertion') await insertionSort();
+            setUILock(false);
+        }
+
+        async function bubbleSort() {
+            let n = data.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    renderData({ [j]: 'Compare', [j + 1]: 'Compare' });
+                    document.getElementById(`node-${j}`).classList.add('active-check');
+                    document.getElementById(`node-${j + 1}`).classList.add('active-check');
+
+                    updateStatus("Comparing elements...");
+                    await sleep(getSleepTime(800));
+
+                    if (data[j] > data[j + 1]) {
+                        updateStatus(`Swapping ${data[j]} and ${data[j + 1]}`);
+                        let temp = data[j];
+                        data[j] = data[j + 1];
+                        data[j + 1] = temp;
+                        renderData({ [j]: 'Swapped', [j + 1]: 'Swapped' });
+                        document.getElementById(`node-${j}`).classList.add('danger');
+                        document.getElementById(`node-${j + 1}`).classList.add('danger');
+                        await sleep(getSleepTime(800));
+                    }
+                }
+            }
+            renderData();
+            updateStatus("Sorting complete");
+        }
+
+        async function selectionSort() {
+            let n = data.length;
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+                for (let j = i + 1; j < n; j++) {
+                    renderData({ [i]: 'Sorted Boundary', [minIdx]: 'Current Min', [j]: 'Scan' });
+                    document.getElementById(`node-${j}`).classList.add('active-check');
+                    updateStatus("Comparing elements...");
+                    await sleep(getSleepTime(500));
+
+                    if (data[j] < data[minIdx]) {
+                        minIdx = j;
+                    }
+                }
+                if (minIdx !== i) {
+                    updateStatus(`Swapping index ${i} with lowest found element (${data[minIdx]})`);
+                    let temp = data[i];
+                    data[i] = data[minIdx];
+                    data[minIdx] = temp;
+                    renderData({ [i]: 'Swapped', [minIdx]: 'Swapped' });
+                    document.getElementById(`node-${i}`).classList.add('success-match');
+                    document.getElementById(`node-${minIdx}`).classList.add('danger');
+                    await sleep(getSleepTime(1000));
+                }
+            }
+            renderData();
+            updateStatus("Sorting complete");
+        }
+
+        async function insertionSort() {
+            let n = data.length;
+            for (let i = 1; i < n; i++) {
+                let key = data[i];
+                let j = i - 1;
+
+                renderData({ [i]: 'Key' });
+                document.getElementById(`node-${i}`).classList.add('active-check');
+                updateStatus(`Inserting ${key} into sorted portion`);
+                await sleep(getSleepTime(800));
+
+                while (j >= 0 && data[j] > key) {
+                    updateStatus("Comparing elements...");
+                    data[j + 1] = data[j];
+                    renderData({ [j + 1]: 'Shifted', [j]: 'Key Slot Search' });
+                    document.getElementById(`node-${j + 1}`).classList.add('danger');
+                    await sleep(getSleepTime(800));
+                    j = j - 1;
+                }
+                data[j + 1] = key;
+                renderData({ [j + 1]: 'Inserted' });
+                document.getElementById(`node-${j + 1}`).classList.add('success-match');
+                await sleep(getSleepTime(800));
+            }
+            renderData();
+            updateStatus("Sorting complete");
+        }
+
+        switchDS('array');
+    </script>
+</body>
+
+</html>
