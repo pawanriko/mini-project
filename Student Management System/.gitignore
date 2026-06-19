@@ -1,0 +1,20 @@
+# Compiled files
+*.exe
+*.out
+*.o
+*.obj
+
+# VS Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# CMake
+build/
+cmake-build-debug/
+cmake-build-release/
+
+# Temporary files
+*.tmp
+*.log
