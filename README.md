@@ -1,37 +1,35 @@
 # Mini-Projects
 
-A collection of small projects built while learning web development and C++. Each project lives in its own folder.
+Small projects I built while learning web development and C++. Each one is in its own folder and each one taught me something different.
 
-## Projects
+## The projects
 
 ### 1. DSA Visualizer
-An interactive web tool that visualises data structures and algorithms, making concepts easier to see and understand.
+A web page that shows how data structures and algorithms actually move, step by step. Reading about sorting is one thing, watching it happen is much easier to understand.
 - **Tech:** HTML, CSS, JavaScript
-- **Folder:** [`DSA Visualizer/`](https://github.com/pawanriko/mini-project/tree/main/DSA%20Visualizer) — open `index.html` to run
+- **Folder:** [`DSA Visualizer/`](https://github.com/pawanriko/mini-project/tree/main/DSA%20Visualizer) — open `index.html` to run it
 
 ### 2. Student Management System
-A console-based C++ application for managing student records, with file storage (`students.txt`) and a screenshot of it in action in the folder.
-- **Tech:** C++ (file handling, CRUD-style record management)
+A C++ console app for managing student records. Records are stored in a file (`students.txt`), so they stay saved between runs. There's a screenshot of it running inside the folder.
+- **Tech:** C++ (file handling, add/view/update/delete records)
 - **Folder:** [`Student Management System/`](https://github.com/pawanriko/mini-project/tree/main/Student%20Management%20System)
 
 ### 3. To-Do App
-A simple task manager for the browser — add and manage your daily tasks.
+A simple task manager in the browser. Add tasks, manage your day, that's it.
 - **Tech:** HTML, CSS, JavaScript
-- **Folder:** [`To-Do-App/`](https://github.com/pawanriko/mini-project/tree/main/To-Do-App) — open `index.html` to run
+- **Folder:** [`To-Do-App/`](https://github.com/pawanriko/mini-project/tree/main/To-Do-App) — open `index.html` to run it
 
 ### 4. Digital Clock
-A live digital clock web page (inside the `Mini-Projects/` folder).
+A live digital clock page. Small, but it was good practice for working with time in JavaScript.
 - **Tech:** HTML, CSS, JavaScript
-- **Folder:** [`Mini-Projects/Digital Clock/`](https://github.com/pawanriko/mini-project/tree/main/Mini-Projects/Digital%20Clock) — open `index.html` to run
+- **Folder:** [`Mini-Projects/Digital Clock/`](https://github.com/pawanriko/mini-project/tree/main/Mini-Projects/Digital%20Clock) — open `index.html` to run it
 
-## How to Run the Web Projects
+## Running the web projects
 
-Clone the repo, open the project folder, and open `index.html` in a browser:
+Clone the repo, go into the project folder, open `index.html` in a browser:
 
 ```bash
 git clone https://github.com/pawanriko/mini-project.git
 ```
 
-## Author
-
-**Pawan Kumar** — [@pawanriko](https://github.com/pawanriko)
+— **Pawan Kumar** · [@pawanriko](https://github.com/pawanriko)
