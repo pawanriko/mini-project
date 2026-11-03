@@ -44,6 +44,15 @@ string trim(const string& s) {
 
 string line(char c, int n = TABLE_WIDTH) { return string(n, c); }
 
+string toLowerStr(string s) {
+    for (char& c : s) c = (char)tolower((unsigned char)c);
+    return s;
+}
+
+bool containsCI(const string& haystack, const string& needle) {
+    return toLowerStr(haystack).find(toLowerStr(needle)) != string::npos;
+}
+
 void clearScreen() {
     // ANSI clear + home; harmless if the terminal ignores it.
     cout << "\033[2J\033[H";
@@ -206,17 +215,89 @@ void addStudent(vector<Student>& students) {
 void searchStudent(const vector<Student>& students) {
     sectionTitle("Search Student");
 
-    int id = readInt("  Enter ID to search: ");
-    for (const auto& s : students) {
-        if (s.id == id) {
-            cout << "\n";
-            printTableHeader();
-            printRow(s);
-            cout << "  " << line('-') << "\n";
+    cout << "    1.  By ID (exact)\n";
+    cout << "    2.  By Name (part of the name is enough)\n";
+    cout << "    3.  By Course (part of the course is enough)\n\n";
+    int by = readInt("  Search by (1-3): ");
+
+    if (by == 1) {
+        int id = readInt("  Enter ID to search: ");
+        for (const auto& s : students) {
+            if (s.id == id) {
+                cout << "\n";
+                printTableHeader();
+                printRow(s);
+                cout << "  " << line('-') << "\n";
+                return;
+            }
+        }
+        cout << "  [!] No student found with ID " << id << ".\n";
+        return;
+    }
+
+    if (by == 2 || by == 3) {
+        string term = readText(by == 2 ? "  Enter name to search: " : "  Enter course to search: ");
+        vector<Student> matches;
+        for (const auto& s : students) {
+            if (by == 2 ? containsCI(s.name, term) : containsCI(s.course, term)) {
+                matches.push_back(s);
+            }
+        }
+        if (matches.empty()) {
+            cout << "  [!] No student matches \"" << term << "\".\n";
             return;
         }
+        cout << "\n";
+        printTableHeader();
+        for (const auto& s : matches) printRow(s);
+        cout << "  " << line('-') << "\n";
+        cout << "  " << matches.size() << " match(es) for \"" << term << "\".\n";
+        return;
     }
-    cout << "  [!] No student found with ID " << id << ".\n";
+
+    cout << "  [!] Please choose 1, 2 or 3.\n";
+}
+
+void showStatistics(const vector<Student>& students) {
+    sectionTitle("Statistics");
+
+    if (students.empty()) {
+        cout << "  No records yet — nothing to summarise.\n";
+        return;
+    }
+
+    long ageSum = 0;
+    const Student* youngest = &students[0];
+    const Student* oldest = &students[0];
+    vector<pair<string, int>> courseCounts; // in first-seen order
+
+    for (const auto& s : students) {
+        ageSum += s.age;
+        if (s.age < youngest->age) youngest = &s;
+        if (s.age > oldest->age) oldest = &s;
+        bool seen = false;
+        for (auto& p : courseCounts) {
+            if (toLowerStr(p.first) == toLowerStr(s.course)) { p.second++; seen = true; break; }
+        }
+        if (!seen) courseCounts.push_back({s.course, 1});
+    }
+
+    sort(courseCounts.begin(), courseCounts.end(),
+         [](const pair<string, int>& a, const pair<string, int>& b) { return a.second > b.second; });
+
+    cout << "  Total students : " << students.size() << "\n";
+    cout << "  Average age    : " << fixed << setprecision(1)
+         << (double)ageSum / students.size() << " years\n";
+    cout << "  Youngest       : " << youngest->name << " (" << youngest->age << ")\n";
+    cout << "  Oldest         : " << oldest->name << " (" << oldest->age << ")\n";
+    cout << "\n  Students per course:\n";
+
+    int maxCount = courseCounts[0].second;
+    for (const auto& p : courseCounts) {
+        int barLen = maxCount ? (p.second * 24) / maxCount : 0;
+        cout << "    " << left << setw(22) << p.first
+             << string(barLen, '#') << " " << p.second << "\n";
+    }
 }
 
 void updateStudent(vector<Student>& students) {
@@ -299,10 +380,11 @@ int main() {
         cout << "    3.  Update Student\n";
         cout << "    4.  Delete Student\n";
         cout << "    5.  View All Students\n";
-        cout << "    6.  Exit\n";
+        cout << "    6.  Statistics\n";
+        cout << "    7.  Exit\n";
         cout << "\n  " << line('-') << "\n";
 
-        choice = readInt("  Choose an option (1-6): ");
+        choice = readInt("  Choose an option (1-7): ");
 
         switch (choice) {
             case 1: addStudent(students); pause(); break;
@@ -310,16 +392,17 @@ int main() {
             case 3: updateStudent(students); pause(); break;
             case 4: deleteStudent(students); pause(); break;
             case 5: viewAllStudents(students); pause(); break;
-            case 6:
+            case 6: showStatistics(students); pause(); break;
+            case 7:
                 cout << "\n  Goodbye. " << students.size()
                      << " record(s) saved in " << FILE_NAME << ".\n\n";
                 break;
             default:
-                cout << "  [!] Please choose a number from 1 to 6.\n";
+                cout << "  [!] Please choose a number from 1 to 7.\n";
                 pause();
                 break;
         }
-    } while (choice != 6 && !cin.eof());
+    } while (choice != 7 && !cin.eof());
 
     return 0;
 }
