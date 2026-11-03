@@ -4,260 +4,525 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSA Visualizer</title>
+    <title>DSA Visualizer — by Pawan Kumar</title>
+    <meta name="description" content="Watch data structures and algorithms move step by step: arrays, stacks, queues, searching and sorting — visualised live.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-color: #1e293b;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --bg: #0b1120;
+            --bg-soft: #0f172a;
+            --panel: #131c31;
+            --panel-2: #182540;
+            --line: #24304d;
+            --ink: #eef2f9;
+            --muted: #8b98b4;
+            --accent: #4f7cff;
+            --accent-2: #22c8f2;
+            --amber: #f5a623;
+            --green: #22c07a;
+            --red: #f2516a;
+            --radius: 16px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            background:
+                radial-gradient(900px 480px at 85% -10%, rgba(79, 124, 255, 0.16), transparent 60%),
+                radial-gradient(700px 420px at -10% 110%, rgba(34, 200, 242, 0.10), transparent 60%),
+                var(--bg);
+            color: var(--ink);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
+
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* ---------- header ---------- */
 
         header {
-            background-color: var(--card-color);
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 2px solid #334155;
+            border-bottom: 1px solid var(--line);
+            background: rgba(11, 17, 32, 0.72);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
         }
 
-        header h1 {
-            font-size: 1.8rem;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .tabs {
+        .header-in {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 1.1rem 1.5rem 1rem;
             display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            align-items: baseline;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .tab-btn {
-            background: #334155;
-            color: var(--text-main);
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+        .brand {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
         }
 
-        .tab-btn.active,
-        .tab-btn:hover {
-            background: var(--accent-color);
-            transform: translateY(-2px);
+        .brand em {
+            font-style: normal;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
+
+        .tagline {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .credit {
+            margin-left: auto;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        /* ---------- tabs ---------- */
+
+        .tabs-wrap {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 1.5rem 1.1rem;
+            display: flex;
+            gap: 1.6rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-group {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-group-label {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.14em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-right: 0.25rem;
+        }
+
+        .tab-btn {
+            background: var(--panel);
+            color: var(--muted);
+            border: 1px solid var(--line);
+            padding: 0.5rem 0.95rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s var(--ease);
+        }
+
+        .tab-btn:hover:not(:disabled) {
+            color: var(--ink);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 6px 18px -6px rgba(79, 124, 255, 0.65);
+        }
+
+        .tab-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        /* ---------- layout ---------- */
 
         main {
             flex: 1;
-            padding: 2rem;
-            max-width: 1100px;
             width: 100%;
+            max-width: 1160px;
             margin: 0 auto;
+            padding: 1.6rem 1.5rem 2.5rem;
         }
 
         .meta-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            grid-template-columns: 1.9fr 1fr;
+            gap: 1.1rem;
+            margin-bottom: 1.1rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 820px) {
             .meta-grid {
                 grid-template-columns: 1fr;
             }
         }
 
+        .card {
+            background: linear-gradient(180deg, var(--panel-2), var(--panel));
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+        }
+
+        /* ---------- controls ---------- */
+
         .control-panel {
-            background-color: var(--card-color);
-            padding: 1.5rem;
-            border-radius: 8px;
+            padding: 1.1rem 1.2rem;
             display: flex;
-            gap: 1rem;
+            gap: 0.7rem;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
 
-        .complexity-card {
-            background-color: var(--card-color);
-            padding: 1.2rem;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        .control-panel .spacer {
+            flex: 1;
         }
 
-        .complexity-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 0.25rem 0;
-            font-size: 0.95rem;
+        .field-label {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
         }
 
-        .complexity-val {
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--warning-color);
-            font-weight: bold;
-        }
-
-        input,
-        select {
-            background: #334155;
-            border: 1px solid #475569;
-            color: var(--text-main);
-            padding: 0.6rem;
-            border-radius: 6px;
+        input[type="number"] {
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 0.62rem 0.8rem;
+            border-radius: 10px;
             outline: none;
+            font: inherit;
+            font-weight: 600;
+            width: 118px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        input {
-            width: 110px;
+        input[type="number"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 124, 255, 0.25);
         }
 
         select {
-            width: 90px;
+            background: var(--bg-soft);
+            border: 1px solid var(--line);
+            color: var(--ink);
+            padding: 0.62rem 0.7rem;
+            border-radius: 10px;
+            outline: none;
+            font: inherit;
+            font-weight: 600;
             cursor: pointer;
         }
 
-        .action-btn {
-            background-color: #475569;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
+        .btn {
+            border: 1px solid var(--line);
+            background: var(--bg-soft);
+            color: var(--ink);
+            padding: 0.62rem 1.15rem;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s;
+            font: inherit;
+            font-weight: 600;
+            font-size: 0.92rem;
+            transition: transform 0.18s var(--ease), background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
         }
 
-        .action-btn.primary {
-            background-color: var(--accent-color);
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            border-color: var(--accent);
         }
 
-        .action-btn.danger {
-            background-color: var(--danger-color);
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
         }
 
-        .action-btn:disabled {
+        .btn.primary {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 8px 20px -8px rgba(79, 124, 255, 0.7);
+        }
+
+        .btn.danger {
+            background: rgba(242, 81, 106, 0.14);
+            border-color: rgba(242, 81, 106, 0.45);
+            color: #ff8ba0;
+        }
+
+        .btn.danger:hover:not(:disabled) {
+            border-color: var(--red);
+        }
+
+        .btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
         }
 
-        .visualizer-container {
-            background-color: var(--card-color);
-            min-height: 280px;
-            border-radius: 8px;
+        /* ---------- info card ---------- */
+
+        .info-card {
+            padding: 1.1rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            justify-content: center;
+        }
+
+        .info-title {
+            font-weight: 800;
+            font-size: 1.02rem;
+            letter-spacing: -0.01em;
+        }
+
+        .info-blurb {
+            color: var(--muted);
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+
+        .cx-row {
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            font-size: 0.86rem;
+            color: var(--muted);
+        }
+
+        .cx-row b {
+            color: var(--ink);
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 600;
+            font-size: 0.84rem;
+        }
+
+        /* ---------- stats ---------- */
+
+        .stats {
+            display: flex;
+            gap: 0.7rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.1rem;
+        }
+
+        .stat {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 0.55rem 0.95rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.55rem;
+        }
+
+        .stat .k {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.66rem;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .stat .v {
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 600;
+            font-size: 1.02rem;
+        }
+
+        /* ---------- stage ---------- */
+
+        .stage {
+            min-height: 300px;
+            padding: 3rem 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 2.5rem;
-            position: relative;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            gap: 14px;
             overflow-x: auto;
+            background-image: radial-gradient(rgba(139, 152, 180, 0.16) 1px, transparent 1px);
+            background-size: 22px 22px;
+        }
+
+        .stage.stack-layout {
+            flex-direction: column-reverse;
+            justify-content: flex-start;
+            align-items: center;
         }
 
         .node {
-            width: 60px;
-            height: 60px;
-            background-color: #475569;
-            border: 3px solid #64748b;
-            border-radius: 8px;
+            width: 62px;
+            height: 62px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #2a3a5f, #22304f);
+            border: 1.5px solid #3b4f7d;
+            border-radius: 14px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-weight: 700;
+            font-size: 1.18rem;
             position: relative;
-            transition: all 0.25s ease;
+            transition: transform 0.28s var(--ease), background 0.25s ease, border-color 0.25s ease, opacity 0.3s ease, box-shadow 0.25s ease;
+            box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.8);
         }
 
         .node .index {
             position: absolute;
-            bottom: -25px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            bottom: -26px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.72rem;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .stage.stack-layout .node .index {
+            left: -38px;
+            right: auto;
+            bottom: auto;
         }
 
         .node .label {
             position: absolute;
-            top: -25px;
-            font-size: 0.8rem;
-            color: var(--warning-color);
+            top: -27px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.7rem;
             font-weight: 600;
+            letter-spacing: 0.04em;
+            color: var(--amber);
             white-space: nowrap;
         }
 
-        .node.active-check {
-            background-color: var(--warning-color);
-            border-color: #d97706;
-            transform: scale(1.1);
-            color: #000;
+        .stage.stack-layout .node .label {
+            top: auto;
+            left: auto;
+            right: -64px;
+            transform: none;
         }
 
-        .node.success-match {
-            background-color: var(--success-color);
-            border-color: #059669;
-            transform: scale(1.15);
+        .node.compare {
+            background: linear-gradient(180deg, #ffb03a, var(--amber));
+            border-color: #ffcf7d;
+            color: #231600;
+            transform: translateY(-8px) scale(1.07);
+            box-shadow: 0 16px 28px -10px rgba(245, 166, 35, 0.55);
         }
 
-        .node.danger {
-            background-color: var(--danger-color);
-            border-color: #b91c1c;
-            transform: scale(1.1);
+        .node.swap {
+            background: linear-gradient(180deg, #ff6b84, var(--red));
+            border-color: #ff9db0;
+            color: #2b000a;
+            transform: translateY(-8px) scale(1.07);
+        }
+
+        .node.found {
+            background: linear-gradient(180deg, #2fe08f, var(--green));
+            border-color: #7df0bb;
+            color: #00240f;
+            transform: scale(1.16);
+            box-shadow: 0 16px 30px -10px rgba(34, 192, 122, 0.6);
+        }
+
+        .node.sorted {
+            background: linear-gradient(180deg, #1d9e63, #157347);
+            border-color: #2fce85;
+            color: #eafff3;
+        }
+
+        .node.key {
+            border-color: var(--accent-2);
+            box-shadow: 0 0 0 3px rgba(34, 200, 242, 0.3), 0 16px 28px -12px rgba(0, 0, 0, 0.8);
+            transform: translateY(-10px);
         }
 
         .node.eliminated {
-            opacity: 0.2;
-            transform: scale(0.85);
+            opacity: 0.18;
+            transform: scale(0.88);
         }
 
-        .stack-layout {
-            flex-direction: column-reverse;
-            justify-content: flex-end;
+        .node.enter {
+            animation: nodeIn 0.35s var(--ease);
         }
 
-        .stack-layout .node .index {
-            left: -35px;
-            bottom: unset;
+        @keyframes nodeIn {
+            from { transform: translateY(-16px) scale(0.8); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
         }
 
-        #status-msg {
+        /* ---------- status console ---------- */
+
+        .status {
+            margin-top: 1.1rem;
+            background: #0a0f1e;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.92rem;
+            color: #a9e5c3;
+            display: flex;
+            gap: 0.7rem;
+            align-items: baseline;
+            min-height: 3rem;
+        }
+
+        .status::before {
+            content: "▸";
+            color: var(--accent-2);
+            font-weight: 600;
+        }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 1.1rem 1.5rem;
             text-align: center;
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
-            color: var(--warning-color);
-            min-height: 1.5rem;
-            font-weight: 500;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        footer b {
+            color: var(--ink);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .node, .btn, .tab-btn {
+                transition: none;
+            }
+            .node.enter {
+                animation: none;
+            }
         }
     </style>
 </head>
@@ -265,369 +530,560 @@
 <body>
 
     <header>
-        <h1>DSA Visualizer</h1>
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchDS('array')">Array</button>
-            <button class="tab-btn" onclick="switchDS('stack')">Stack</button>
-            <button class="tab-btn" onclick="switchDS('queue')">Queue</button>
-            <button class="tab-btn" onclick="switchDS('linear')">Linear Search</button>
-            <button class="tab-btn" onclick="switchDS('binary')">Binary Search</button>
-            <button class="tab-btn" onclick="switchDS('bubble')">Bubble Sort</button>
-            <button class="tab-btn" onclick="switchDS('selection')">Selection Sort</button>
-            <button class="tab-btn" onclick="switchDS('insertion')">Insertion Sort</button>
+        <div class="header-in">
+            <p class="brand">DSA <em>Visualizer</em></p>
+            <p class="tagline">Watch data structures &amp; algorithms move, step by step.</p>
+            <p class="credit">By Pawan Kumar</p>
         </div>
+        <nav class="tabs-wrap" aria-label="Choose a data structure or algorithm">
+            <div class="tab-group">
+                <span class="tab-group-label">Structures</span>
+                <button class="tab-btn" data-mode="array">Array</button>
+                <button class="tab-btn" data-mode="stack">Stack</button>
+                <button class="tab-btn" data-mode="queue">Queue</button>
+            </div>
+            <div class="tab-group">
+                <span class="tab-group-label">Searching</span>
+                <button class="tab-btn" data-mode="linear">Linear Search</button>
+                <button class="tab-btn" data-mode="binary">Binary Search</button>
+            </div>
+            <div class="tab-group">
+                <span class="tab-group-label">Sorting</span>
+                <button class="tab-btn" data-mode="bubble">Bubble Sort</button>
+                <button class="tab-btn" data-mode="selection">Selection Sort</button>
+                <button class="tab-btn" data-mode="insertion">Insertion Sort</button>
+            </div>
+        </nav>
     </header>
 
     <main>
         <div class="meta-grid">
-            <div class="control-panel" id="controls"></div>
-            <div class="complexity-card" id="complexity-box"></div>
+            <div class="card control-panel" id="controls"></div>
+            <div class="card info-card" id="info-box"></div>
         </div>
 
-        <div class="visualizer-container" id="display-container"></div>
+        <div class="stats" aria-label="Run statistics">
+            <div class="stat"><span class="k">Comparisons</span><span class="v" id="stat-comp">0</span></div>
+            <div class="stat"><span class="k">Swaps / Shifts</span><span class="v" id="stat-swap">0</span></div>
+            <div class="stat"><span class="k">Elements</span><span class="v" id="stat-size">0</span></div>
+            <div class="stat"><span class="k">Status</span><span class="v" id="stat-state">Ready</span></div>
+        </div>
 
-        <div id="status-msg">Select a data structure or algorithm to get started.</div>
+        <div class="card stage" id="stage"></div>
+
+        <p class="status" id="status">Pick a structure or algorithm above to get started.</p>
     </main>
 
+    <footer>
+        Built by <b>Pawan Kumar</b> · Plain HTML, CSS &amp; JavaScript · Every animation is the real algorithm running.
+    </footer>
+
     <script>
-        let currentDS = 'array';
-        let data = [];
-        let isAnimating = false;
-        let speedMultiplier = 1;
+        "use strict";
 
-        const complexitySpecs = {
-            array: { time: 'O(n) for insertion/deletion', space: 'O(n)' },
-            stack: { time: 'O(1) Push/Pop', space: 'O(n)' },
-            queue: { time: 'O(1) Enqueue/Dequeue', space: 'O(n)' },
-            linear: { time: 'O(n) Worst Case', space: 'O(1)' },
-            binary: { time: 'O(log n) Best Case (Requires Sorted)', space: 'O(1)' },
-            bubble: { time: 'O(n²)', space: 'O(1)' },
-            selection: { time: 'O(n²)', space: 'O(1)' },
-            insertion: { time: 'O(n²)', space: 'O(1)' }
-        };
+        /* ================= mode catalogue ================= */
 
-        const controls = document.getElementById('controls');
-        const container = document.getElementById('display-container');
-        const statusMsg = document.getElementById('status-msg');
-        const complexityBox = document.getElementById('complexity-box');
-
-        const displayNames = {
-            array: 'Array', stack: 'Stack', queue: 'Queue', linear: 'Linear Search',
-            binary: 'Binary Search', bubble: 'Bubble Sort', selection: 'Selection Sort', insertion: 'Insertion Sort'
-        };
-
-        function switchDS(type) {
-            if (isAnimating) return;
-            currentDS = type;
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                let normBtn = btn.innerText.toLowerCase().replace(" search", "").replace(" sort", "");
-                btn.classList.toggle('active', normBtn === type);
-            });
-
-            if (type === 'binary') {
-                data = [12, 22, 34, 45, 57, 68, 71, 85, 99];
-            } else if (['bubble', 'selection', 'insertion', 'linear'].includes(type)) {
-                data = [54, 12, 89, 34, 67, 21];
-            } else if (type === 'stack' || type === 'queue') {
-                data = [10, 20, 30];
-            } else {
-                data = [35, 12, 78, 46, 23];
+        const MODES = {
+            array: {
+                name: "Array",
+                blurb: "A fixed row of boxes, each with an index. Inserting or deleting in the middle shifts everything after it.",
+                best: "O(1) access", avg: "O(n) insert/delete", worst: "O(n)", space: "O(n)",
+                seed: [35, 12, 78, 46, 23]
+            },
+            stack: {
+                name: "Stack",
+                blurb: "Last in, first out — like a pile of plates. You can only add or remove from the top.",
+                best: "O(1) push/pop", avg: "O(1)", worst: "O(1)", space: "O(n)",
+                seed: [10, 20, 30]
+            },
+            queue: {
+                name: "Queue",
+                blurb: "First in, first out — like a line at a counter. New items join the rear, items leave from the front.",
+                best: "O(1) enqueue/dequeue", avg: "O(1)", worst: "O(1)", space: "O(n)",
+                seed: [10, 20, 30]
+            },
+            linear: {
+                name: "Linear Search",
+                blurb: "Check every element one by one, left to right, until the target turns up — or doesn't.",
+                best: "O(1)", avg: "O(n)", worst: "O(n)", space: "O(1)",
+                seed: [54, 12, 89, 34, 67, 21]
+            },
+            binary: {
+                name: "Binary Search",
+                blurb: "Only works on a sorted array. Halve the search range every step by checking the middle element.",
+                best: "O(1)", avg: "O(log n)", worst: "O(log n)", space: "O(1)",
+                seed: [12, 22, 34, 45, 57, 68, 71, 85, 99]
+            },
+            bubble: {
+                name: "Bubble Sort",
+                blurb: "Neighbouring pairs are compared and swapped if out of order. The largest unsorted value bubbles to the end each pass.",
+                best: "O(n)", avg: "O(n²)", worst: "O(n²)", space: "O(1)",
+                seed: [54, 12, 89, 34, 67, 21]
+            },
+            selection: {
+                name: "Selection Sort",
+                blurb: "Scan the unsorted part for the smallest value and swap it into place, one position at a time.",
+                best: "O(n²)", avg: "O(n²)", worst: "O(n²)", space: "O(1)",
+                seed: [54, 12, 89, 34, 67, 21]
+            },
+            insertion: {
+                name: "Insertion Sort",
+                blurb: "Take one element at a time and slide it left into its correct place in the already-sorted part.",
+                best: "O(n)", avg: "O(n²)", worst: "O(n²)", space: "O(1)",
+                seed: [54, 12, 89, 34, 67, 21]
             }
+        };
 
-            renderControls();
-            renderComplexity();
-            renderData();
-            updateStatus(`Switched to ${displayNames[type]}`);
+        const SORTS = ["bubble", "selection", "insertion"];
+        const SEARCHES = ["linear", "binary"];
+
+        /* ================= state ================= */
+
+        let mode = "array";
+        let data = [];
+        let busy = false;
+        let delayFactor = 1;           // chosen from the speed <select>: 2 = 0.5x, 1 = 1x, 0.5 = 2x
+        let stats = { comp: 0, swap: 0 };
+
+        const stage = document.getElementById("stage");
+        const controlsEl = document.getElementById("controls");
+        const infoEl = document.getElementById("info-box");
+        const statusEl = document.getElementById("status");
+        const statComp = document.getElementById("stat-comp");
+        const statSwap = document.getElementById("stat-swap");
+        const statSize = document.getElementById("stat-size");
+        const statState = document.getElementById("stat-state");
+
+        /* ================= helpers ================= */
+
+        const sleep = ms => new Promise(res => setTimeout(res, ms * delayFactor));
+        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        function say(msg) { statusEl.textContent = msg; }
+
+        function syncStats() {
+            statComp.textContent = stats.comp;
+            statSwap.textContent = stats.swap;
+            statSize.textContent = data.length;
+            statState.textContent = busy ? "Running…" : "Ready";
         }
 
-        function updateStatus(msg) { statusMsg.innerText = msg; }
+        function resetStats() {
+            stats = { comp: 0, swap: 0 };
+            syncStats();
+        }
 
-        function changeSpeed(val) { speedMultiplier = parseFloat(val); }
+        function setBusy(on) {
+            busy = on;
+            document.querySelectorAll(".tab-btn, .ctl").forEach(el => { el.disabled = on; });
+            syncStats();
+        }
 
-        function renderComplexity() {
-            const spec = complexitySpecs[currentDS];
-            complexityBox.innerHTML = `
-                <div class="complexity-row"><span>Time Complexity:</span><span class="complexity-val">${spec.time}</span></div>
-                <div class="complexity-row"><span>Space Complexity:</span><span class="complexity-val">${spec.space}</span></div>
-            `;
+        function readNumber(id) {
+            const el = document.getElementById(id);
+            if (!el) return NaN;
+            const v = parseInt(el.value, 10);
+            return Number.isNaN(v) ? NaN : v;
+        }
+
+        /* ================= rendering ================= */
+
+        // marks: { index: "compare" | "swap" | "found" | "sorted" | "key" | "eliminated" }
+        // labels: { index: "text shown above the node" }
+        function paint(marks = {}, labels = {}, enterIdx = -1) {
+            stage.innerHTML = "";
+            stage.classList.toggle("stack-layout", mode === "stack");
+
+            const autoLabels = {};
+            if (mode === "stack" && data.length) autoLabels[data.length - 1] = "TOP";
+            if (mode === "queue" && data.length) {
+                autoLabels[0] = data.length === 1 ? "FRONT · REAR" : "FRONT";
+                if (data.length > 1) autoLabels[data.length - 1] = "REAR";
+            }
+            const allLabels = Object.assign({}, autoLabels, labels);
+
+            data.forEach((val, idx) => {
+                const node = document.createElement("div");
+                node.className = "node" + (marks[idx] ? " " + marks[idx] : "") + (idx === enterIdx ? " enter" : "");
+                node.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
+                if (allLabels[idx]) {
+                    const lab = document.createElement("span");
+                    lab.className = "label";
+                    lab.textContent = allLabels[idx];
+                    node.appendChild(lab);
+                }
+                stage.appendChild(node);
+            });
+            syncStats();
+        }
+
+        function renderInfo() {
+            const m = MODES[mode];
+            infoEl.innerHTML = `
+                <p class="info-title">${m.name}</p>
+                <p class="info-blurb">${m.blurb}</p>
+                <div class="cx-row">
+                    <span>Best <b>${m.best}</b></span>
+                    <span>Avg <b>${m.avg}</b></span>
+                    <span>Worst <b>${m.worst}</b></span>
+                    <span>Space <b>${m.space}</b></span>
+                </div>`;
+        }
+
+        function speedControl() {
+            return `
+                <span class="spacer"></span>
+                <label class="field-label" for="speedSel">Speed</label>
+                <select id="speedSel" class="ctl">
+                    <option value="2">0.5×</option>
+                    <option value="1" selected>1×</option>
+                    <option value="0.5">2×</option>
+                    <option value="0.25">4×</option>
+                </select>`;
         }
 
         function renderControls() {
-            let speedSelectorHTML = `
-                <select id="speedSelect" onchange="changeSpeed(this.value)">
-                    <option value="2">0.5x</option>
-                    <option value="1" selected>1.0x</option>
-                    <option value="0.5">2.0x</option>
-                </select>
-            `;
-
-            let actionHTML = '';
-            if (currentDS === 'array') {
-                actionHTML = `
-                    <input type="number" id="valInput" placeholder="Value">
-                    <input type="number" id="idxInput" placeholder="Index">
-                    <button class="action-btn primary" onclick="arrayInsert()">Insert</button>
-                    <button class="action-btn danger" onclick="arrayDelete()">Delete At</button>
-                `;
-            } else if (currentDS === 'stack') {
-                actionHTML = `
-                    <input type="number" id="valInput" placeholder="Value">
-                    <button class="action-btn primary" onclick="stackPush()">Push</button>
-                    <button class="action-btn danger" onclick="stackPop()">Pop</button>
-                `;
-            } else if (currentDS === 'queue') {
-                actionHTML = `
-                    <input type="number" id="valInput" placeholder="Value">
-                    <button class="action-btn primary" onclick="queueEnqueue()">Enqueue</button>
-                    <button class="action-btn danger" onclick="queueDequeue()">Dequeue</button>
-                `;
-            } else if (currentDS === 'linear' || currentDS === 'binary') {
-                actionHTML = `
-                    <input type="number" id="valInput" placeholder="Target">
-                    <button class="action-btn primary" onclick="runSearch()">Search</button>
-                `;
-            } else if (['bubble', 'selection', 'insertion'].includes(currentDS)) {
-                actionHTML = `<button class="action-btn primary" onclick="runSorting()">Sort Array</button>`;
+            let html = "";
+            if (mode === "array") {
+                html = `
+                    <input type="number" id="inVal" class="ctl" placeholder="Value" aria-label="Value">
+                    <input type="number" id="inIdx" class="ctl" placeholder="Index" aria-label="Index">
+                    <button class="btn primary ctl" id="btnInsert">Insert</button>
+                    <button class="btn danger ctl" id="btnDelete">Delete at</button>`;
+            } else if (mode === "stack") {
+                html = `
+                    <input type="number" id="inVal" class="ctl" placeholder="Value" aria-label="Value">
+                    <button class="btn primary ctl" id="btnPush">Push</button>
+                    <button class="btn danger ctl" id="btnPop">Pop</button>
+                    <button class="btn ctl" id="btnPeek">Peek</button>`;
+            } else if (mode === "queue") {
+                html = `
+                    <input type="number" id="inVal" class="ctl" placeholder="Value" aria-label="Value">
+                    <button class="btn primary ctl" id="btnEnqueue">Enqueue</button>
+                    <button class="btn danger ctl" id="btnDequeue">Dequeue</button>`;
+            } else if (SEARCHES.includes(mode)) {
+                html = `
+                    <input type="number" id="inVal" class="ctl" placeholder="Target" aria-label="Target value">
+                    <button class="btn primary ctl" id="btnSearch">Search</button>
+                    <button class="btn ctl" id="btnRandom">🎲 Random data</button>
+                    <button class="btn ctl" id="btnReset">Reset</button>`;
+            } else if (SORTS.includes(mode)) {
+                html = `
+                    <button class="btn primary ctl" id="btnSort">▶ Sort</button>
+                    <button class="btn ctl" id="btnRandom">🎲 Random data</button>
+                    <button class="btn ctl" id="btnReset">Reset</button>`;
             }
-            controls.innerHTML = actionHTML + speedSelectorHTML;
-        }
+            controlsEl.innerHTML = html + speedControl();
 
-        function renderData(labels = {}) {
-            container.innerHTML = '';
-            container.classList.toggle('stack-layout', currentDS === 'stack');
-
-            data.forEach((val, idx) => {
-                const node = document.createElement('div');
-                node.className = 'node';
-                node.id = `node-${idx}`;
-                node.innerHTML = `<span>${val}</span><span class="index">${idx}</span>`;
-
-                if (labels[idx]) {
-                    const labelSpan = document.createElement('span');
-                    labelSpan.className = 'label';
-                    labelSpan.innerText = labels[idx];
-                    node.appendChild(labelSpan);
-                }
-                container.appendChild(node);
+            document.getElementById("speedSel").addEventListener("change", e => {
+                delayFactor = parseFloat(e.target.value);
             });
+
+            const on = (id, fn) => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener("click", fn);
+            };
+            on("btnInsert", arrayInsert);
+            on("btnDelete", arrayDelete);
+            on("btnPush", stackPush);
+            on("btnPop", stackPop);
+            on("btnPeek", stackPeek);
+            on("btnEnqueue", queueEnqueue);
+            on("btnDequeue", queueDequeue);
+            on("btnSearch", runSearch);
+            on("btnSort", runSort);
+            on("btnRandom", randomData);
+            on("btnReset", () => loadMode(mode));
         }
 
-        const getSleepTime = (baseMs) => baseMs * speedMultiplier;
-        const sleep = ms => new Promise(res => setTimeout(res, ms));
-
-        function setUILock(lock) {
-            isAnimating = lock;
-            document.querySelectorAll('.action-btn, .tab-btn, #speedSelect').forEach(el => el.disabled = lock);
+        function loadMode(next) {
+            if (busy) return;
+            mode = next;
+            data = MODES[mode].seed.slice();
+            resetStats();
+            document.querySelectorAll(".tab-btn").forEach(b => {
+                b.classList.toggle("active", b.dataset.mode === mode);
+            });
+            renderControls();
+            renderInfo();
+            paint();
+            say(`${MODES[mode].name} loaded. ${MODES[mode].blurb}`);
         }
+
+        function randomData() {
+            if (busy) return;
+            const n = rand(6, 9);
+            const fresh = new Set();
+            while (fresh.size < n) fresh.add(rand(5, 99));
+            data = [...fresh];
+            if (mode === "binary") data.sort((a, b) => a - b);
+            resetStats();
+            paint();
+            say(`New random data generated (${n} elements)${mode === "binary" ? ", sorted for binary search" : ""}.`);
+        }
+
+        /* ================= array ================= */
 
         function arrayInsert() {
-            const val = parseInt(document.getElementById('valInput').value);
-            const idx = parseInt(document.getElementById('idxInput').value);
-            if (isNaN(val) || isNaN(idx) || idx < 0 || idx > data.length) return updateStatus("Invalid input or index.");
+            const val = readNumber("inVal");
+            const idx = readNumber("inIdx");
+            if (Number.isNaN(val)) return say("Type a value to insert first.");
+            if (Number.isNaN(idx) || idx < 0 || idx > data.length) {
+                return say(`Index must be between 0 and ${data.length} (the end).`);
+            }
             data.splice(idx, 0, val);
-            renderData();
+            paint({}, {}, idx);
+            say(`Inserted ${val} at index ${idx}. Elements after it shifted one place right.`);
         }
 
         function arrayDelete() {
-            const idx = parseInt(document.getElementById('idxInput').value);
-            if (isNaN(idx) || idx < 0 || idx >= data.length) return updateStatus("Invalid index.");
-            data.splice(idx, 1);
-            renderData();
+            const idx = readNumber("inIdx");
+            if (Number.isNaN(idx) || idx < 0 || idx >= data.length) {
+                return say(`Index must be between 0 and ${data.length - 1}.`);
+            }
+            const [removed] = data.splice(idx, 1);
+            paint();
+            say(`Deleted ${removed} from index ${idx}. Elements after it shifted one place left.`);
         }
 
+        /* ================= stack ================= */
+
         function stackPush() {
-            const val = parseInt(document.getElementById('valInput').value);
-            if (isNaN(val)) return;
+            const val = readNumber("inVal");
+            if (Number.isNaN(val)) return say("Type a value to push first.");
             data.push(val);
-            renderData({ [data.length - 1]: 'Top' });
+            paint({}, {}, data.length - 1);
+            say(`Pushed ${val}. It is now the top of the stack.`);
+        }
+
+        function stackPeek() {
+            if (!data.length) return say("Stack is empty — nothing to peek at.");
+            paint({ [data.length - 1]: "compare" });
+            say(`Peek: the top element is ${data[data.length - 1]} (it stays on the stack).`);
         }
 
         async function stackPop() {
-            if (data.length === 0) return updateStatus("Stack Underflow!");
-            setUILock(true);
-            renderData({ [data.length - 1]: 'Popping!' });
-            document.getElementById(`node-${data.length - 1}`).classList.add('danger');
-            await sleep(getSleepTime(600));
-            data.pop();
-            renderData(data.length ? { [data.length - 1]: 'Top' } : {});
-            setUILock(false);
+            if (!data.length) return say("Stack underflow — the stack is already empty.");
+            setBusy(true);
+            const top = data.length - 1;
+            paint({ [top]: "swap" }, { [top]: "POPPING" });
+            await sleep(650);
+            const val = data.pop();
+            paint();
+            setBusy(false);
+            say(`Popped ${val}. ${data.length ? `New top is ${data[data.length - 1]}.` : "The stack is now empty."}`);
         }
 
+        /* ================= queue ================= */
+
         function queueEnqueue() {
-            const val = parseInt(document.getElementById('valInput').value);
-            if (isNaN(val)) return;
+            const val = readNumber("inVal");
+            if (Number.isNaN(val)) return say("Type a value to enqueue first.");
             data.push(val);
-            renderData({ 0: 'Front', [data.length - 1]: data.length === 1 ? 'Front/Rear' : 'Rear' });
+            paint({}, {}, data.length - 1);
+            say(`Enqueued ${val} at the rear.`);
         }
 
         async function queueDequeue() {
-            if (data.length === 0) return updateStatus("Queue Underflow!");
-            setUILock(true);
-            renderData({ 0: 'Dequeuing!', [data.length - 1]: 'Rear' });
-            document.getElementById('node-0').classList.add('danger');
-            await sleep(getSleepTime(600));
-            data.shift();
-            renderData(data.length ? { 0: 'Front', [data.length - 1]: data.length === 1 ? 'Front/Rear' : 'Rear' } : {});
-            setUILock(false);
+            if (!data.length) return say("Queue underflow — the queue is already empty.");
+            setBusy(true);
+            paint({ 0: "swap" }, { 0: "DEQUEUING" });
+            await sleep(650);
+            const val = data.shift();
+            paint();
+            setBusy(false);
+            say(`Dequeued ${val} from the front. ${data.length ? `New front is ${data[0]}.` : "The queue is now empty."}`);
         }
 
+        /* ================= searching ================= */
+
         async function runSearch() {
-            const target = parseInt(document.getElementById('valInput').value);
-            if (isNaN(target)) return updateStatus("Please enter a valid search number.");
-            setUILock(true);
-            if (currentDS === 'linear') await linearSearch(target);
-            else if (currentDS === 'binary') await binarySearch(target);
-            setUILock(false);
+            const target = readNumber("inVal");
+            if (Number.isNaN(target)) return say("Type the target value to search for.");
+            resetStats();
+            setBusy(true);
+            if (mode === "linear") await linearSearch(target);
+            else await binarySearch(target);
+            setBusy(false);
         }
 
         async function linearSearch(target) {
-            updateStatus("Searching...");
-            let found = false;
             for (let i = 0; i < data.length; i++) {
-                renderData({ [i]: 'Checking' });
-                const node = document.getElementById(`node-${i}`);
-                node.classList.add('active-check');
-
-                updateStatus(`Comparing index ${i} (${data[i]}) with target ${target}`);
-                await sleep(getSleepTime(1000));
-
+                stats.comp++;
+                paint({ [i]: "compare" }, { [i]: "CHECKING" });
+                say(`Step ${i + 1}: is data[${i}] = ${data[i]} equal to ${target}?`);
+                await sleep(900);
                 if (data[i] === target) {
-                    node.className = 'node success-match';
-                    updateStatus(`Found target ${target} at index ${i}!`);
-                    found = true;
-                    break;
+                    paint({ [i]: "found" }, { [i]: "FOUND" });
+                    say(`Found ${target} at index ${i} after ${stats.comp} comparison${stats.comp === 1 ? "" : "s"}.`);
+                    return;
                 }
-                node.classList.remove('active-check');
-                node.classList.add('eliminated');
+                paint({ [i]: "eliminated" });
+                await sleep(220);
             }
-            if (!found) updateStatus("Element not found");
+            say(`${target} is not in the array — all ${data.length} elements checked.`);
         }
 
         async function binarySearch(target) {
-            updateStatus("Searching...");
-            let low = 0, high = data.length - 1, found = false;
+            let low = 0, high = data.length - 1;
             while (low <= high) {
-                let mid = Math.floor((low + high) / 2);
-                renderData({ [low]: 'Low', [high]: 'High', [mid]: 'Mid' });
-
-                for (let i = 0; i < data.length; i++) if (i < low || i > high) document.getElementById(`node-${i}`).classList.add('eliminated');
-
-                const midNode = document.getElementById(`node-${mid}`);
-                midNode.classList.add('active-check');
-                updateStatus(`Comparing middle element index ${mid} (${data[mid]}) with target ${target}`);
-                await sleep(getSleepTime(1000));
+                const mid = Math.floor((low + high) / 2);
+                stats.comp++;
+                const marks = {}, labels = { [low]: "LOW", [high]: "HIGH", [mid]: "MID" };
+                for (let i = 0; i < data.length; i++) {
+                    if (i < low || i > high) marks[i] = "eliminated";
+                }
+                marks[mid] = "compare";
+                paint(marks, labels);
+                say(`Range [${low}…${high}] → mid = ${mid}, data[${mid}] = ${data[mid]}. Comparing with ${target}…`);
+                await sleep(1050);
 
                 if (data[mid] === target) {
-                    midNode.className = 'node success-match';
-                    updateStatus(`Found target ${target} at index ${mid}!`);
-                    found = true; break;
-                } else if (data[mid] < target) {
+                    paint({ [mid]: "found" }, { [mid]: "FOUND" });
+                    say(`Found ${target} at index ${mid} after ${stats.comp} comparison${stats.comp === 1 ? "" : "s"} — that's the power of halving.`);
+                    return;
+                }
+                if (data[mid] < target) {
+                    say(`${data[mid]} < ${target}, so the target can only be in the right half.`);
                     low = mid + 1;
                 } else {
+                    say(`${data[mid]} > ${target}, so the target can only be in the left half.`);
                     high = mid - 1;
                 }
+                await sleep(650);
             }
-            if (!found) {
-                renderData();
-                data.forEach((_, i) => document.getElementById(`node-${i}`).classList.add('eliminated'));
-                updateStatus("Element not found");
-            }
+            const marks = {};
+            data.forEach((_, i) => { marks[i] = "eliminated"; });
+            paint(marks);
+            say(`${target} is not in the array — the search range emptied out.`);
         }
 
-        async function runSorting() {
-            setUILock(true);
-            if (currentDS === 'bubble') await bubbleSort();
-            else if (currentDS === 'selection') await selectionSort();
-            else if (currentDS === 'insertion') await insertionSort();
-            setUILock(false);
+        /* ================= sorting ================= */
+
+        async function runSort() {
+            resetStats();
+            setBusy(true);
+            if (mode === "bubble") await bubbleSort();
+            else if (mode === "selection") await selectionSort();
+            else await insertionSort();
+            setBusy(false);
+        }
+
+        function sortedMarks(upto) {
+            const marks = {};
+            for (let i = 0; i < upto; i++) marks[i] = "sorted";
+            return marks;
+        }
+
+        async function finishSort() {
+            // celebratory left-to-right green sweep
+            for (let i = 0; i < data.length; i++) {
+                paint(sortedMarks(i + 1));
+                await sleep(110);
+            }
+            say(`Sorting complete — ${stats.comp} comparisons, ${stats.swap} swaps/shifts.`);
         }
 
         async function bubbleSort() {
-            let n = data.length;
+            const n = data.length;
             for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
                 for (let j = 0; j < n - i - 1; j++) {
-                    renderData({ [j]: 'Compare', [j + 1]: 'Compare' });
-                    document.getElementById(`node-${j}`).classList.add('active-check');
-                    document.getElementById(`node-${j + 1}`).classList.add('active-check');
-
-                    updateStatus("Comparing elements...");
-                    await sleep(getSleepTime(800));
+                    stats.comp++;
+                    const marks = sortedMarks(0);
+                    for (let k = n - i; k < n; k++) marks[k] = "sorted";
+                    marks[j] = "compare"; marks[j + 1] = "compare";
+                    paint(marks, { [j]: "COMPARE", [j + 1]: "COMPARE" });
+                    say(`Compare ${data[j]} and ${data[j + 1]}.`);
+                    await sleep(750);
 
                     if (data[j] > data[j + 1]) {
-                        updateStatus(`Swapping ${data[j]} and ${data[j + 1]}`);
-                        let temp = data[j];
-                        data[j] = data[j + 1];
-                        data[j + 1] = temp;
-                        renderData({ [j]: 'Swapped', [j + 1]: 'Swapped' });
-                        document.getElementById(`node-${j}`).classList.add('danger');
-                        document.getElementById(`node-${j + 1}`).classList.add('danger');
-                        await sleep(getSleepTime(800));
+                        [data[j], data[j + 1]] = [data[j + 1], data[j]];
+                        stats.swap++;
+                        swapped = true;
+                        const m2 = {};
+                        for (let k = n - i; k < n; k++) m2[k] = "sorted";
+                        m2[j] = "swap"; m2[j + 1] = "swap";
+                        paint(m2, { [j]: "SWAPPED", [j + 1]: "SWAPPED" });
+                        say(`${data[j + 1]} was bigger — swapped, so ${data[j]} now sits before it.`);
+                        await sleep(750);
                     }
                 }
+                if (!swapped) break; // already sorted — bubble sort can stop early
             }
-            renderData();
-            updateStatus("Sorting complete");
+            await finishSort();
         }
 
         async function selectionSort() {
-            let n = data.length;
+            const n = data.length;
             for (let i = 0; i < n - 1; i++) {
                 let minIdx = i;
                 for (let j = i + 1; j < n; j++) {
-                    renderData({ [i]: 'Sorted Boundary', [minIdx]: 'Current Min', [j]: 'Scan' });
-                    document.getElementById(`node-${j}`).classList.add('active-check');
-                    updateStatus("Comparing elements...");
-                    await sleep(getSleepTime(500));
-
-                    if (data[j] < data[minIdx]) {
-                        minIdx = j;
-                    }
+                    stats.comp++;
+                    const marks = sortedMarks(i);
+                    marks[minIdx] = "key";
+                    marks[j] = "compare";
+                    paint(marks, { [minIdx]: "MIN SO FAR", [j]: "SCAN" });
+                    say(`Scanning: is ${data[j]} smaller than the current minimum ${data[minIdx]}?`);
+                    await sleep(520);
+                    if (data[j] < data[minIdx]) minIdx = j;
                 }
                 if (minIdx !== i) {
-                    updateStatus(`Swapping index ${i} with lowest found element (${data[minIdx]})`);
-                    let temp = data[i];
-                    data[i] = data[minIdx];
-                    data[minIdx] = temp;
-                    renderData({ [i]: 'Swapped', [minIdx]: 'Swapped' });
-                    document.getElementById(`node-${i}`).classList.add('success-match');
-                    document.getElementById(`node-${minIdx}`).classList.add('danger');
-                    await sleep(getSleepTime(1000));
+                    [data[i], data[minIdx]] = [data[minIdx], data[i]];
+                    stats.swap++;
+                    const marks = sortedMarks(i);
+                    marks[i] = "found"; marks[minIdx] = "swap";
+                    paint(marks, { [i]: "PLACED", [minIdx]: "SWAPPED" });
+                    say(`Smallest in the unsorted part was ${data[i]} — swapped into position ${i}.`);
+                    await sleep(900);
+                } else {
+                    say(`${data[i]} is already the smallest — it stays at position ${i}.`);
+                    await sleep(500);
                 }
             }
-            renderData();
-            updateStatus("Sorting complete");
+            await finishSort();
         }
 
         async function insertionSort() {
-            let n = data.length;
+            const n = data.length;
             for (let i = 1; i < n; i++) {
-                let key = data[i];
+                const key = data[i];
                 let j = i - 1;
-
-                renderData({ [i]: 'Key' });
-                document.getElementById(`node-${i}`).classList.add('active-check');
-                updateStatus(`Inserting ${key} into sorted portion`);
-                await sleep(getSleepTime(800));
+                const startMarks = sortedMarks(i);
+                startMarks[i] = "key";
+                paint(startMarks, { [i]: "KEY" });
+                say(`Take ${key} and find its place in the sorted part.`);
+                await sleep(800);
 
                 while (j >= 0 && data[j] > key) {
-                    updateStatus("Comparing elements...");
+                    stats.comp++;
                     data[j + 1] = data[j];
-                    renderData({ [j + 1]: 'Shifted', [j]: 'Key Slot Search' });
-                    document.getElementById(`node-${j + 1}`).classList.add('danger');
-                    await sleep(getSleepTime(800));
-                    j = j - 1;
+                    stats.swap++;
+                    const marks = sortedMarks(j + 1);
+                    marks[j + 1] = "swap";
+                    paint(marks, { [j + 1]: "SHIFT →" });
+                    say(`${data[j]} > ${key}, so ${data[j]} shifts one place right.`);
+                    await sleep(750);
+                    j--;
                 }
+                if (j >= 0) stats.comp++; // the final comparison that stopped the loop
                 data[j + 1] = key;
-                renderData({ [j + 1]: 'Inserted' });
-                document.getElementById(`node-${j + 1}`).classList.add('success-match');
-                await sleep(getSleepTime(800));
+                const marks = sortedMarks(i + 1);
+                marks[j + 1] = "found";
+                paint(marks, { [j + 1]: "INSERTED" });
+                say(`${key} drops into position ${j + 1}.`);
+                await sleep(800);
             }
-            renderData();
-            updateStatus("Sorting complete");
+            await finishSort();
         }
 
-        switchDS('array');
+        /* ================= tabs + boot ================= */
+
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => loadMode(btn.dataset.mode));
+        });
+
+        loadMode("array");
     </script>
 </body>
 
