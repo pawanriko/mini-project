@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -53,6 +54,28 @@ bool containsCI(const string& haystack, const string& needle) {
     return toLowerStr(haystack).find(toLowerStr(needle)) != string::npos;
 }
 
+// Input ended (Ctrl+D / Ctrl+Z / a piped script ran dry): leave
+// cleanly instead of looping forever or inventing sentinel values.
+[[noreturn]] void exitOnEof() {
+    cout << "\n  Input closed (EOF) — exiting.\n";
+    exit(0);
+}
+
+// Strict whole-string integer parse: "12abc" and "" are NOT numbers.
+bool parseIntStrict(const string& raw, int& out) {
+    string s = trim(raw);
+    if (s.empty()) return false;
+    try {
+        size_t pos = 0;
+        int v = stoi(s, &pos);
+        if (pos != s.size()) return false;
+        out = v;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 void clearScreen() {
     // ANSI clear + home; harmless if the terminal ignores it.
     cout << "\033[2J\033[H";
@@ -74,7 +97,7 @@ int readInt(const string& prompt) {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return value;
         }
-        if (cin.eof()) return -1;
+        if (cin.eof()) exitOnEof();
         cout << "  [!] Please enter a whole number.\n";
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -96,8 +119,19 @@ string readText(const string& prompt) {
         getline(cin, input);
         input = trim(input);
         if (!input.empty()) return input;
+        if (cin.eof()) exitOnEof();
         cout << "  [!] This field cannot be empty.\n";
-        if (cin.eof()) return "";
+    }
+}
+
+// For fields that get saved to the CSV file (name, course): a comma
+// inside the value would corrupt the record's columns, so refuse it
+// here instead of silently losing the record on the next load.
+string readField(const string& prompt) {
+    while (true) {
+        string value = readText(prompt);
+        if (value.find(',') == string::npos) return value;
+        cout << "  [!] Commas aren't allowed in this field — they'd break the save file. Try again without one.\n";
     }
 }
 
@@ -110,29 +144,32 @@ vector<Student> loadRecords() {
     if (!file.is_open()) return students;
 
     string row;
+    bool firstLine = true;
     while (getline(file, row)) {
+        if (firstLine) {
+            firstLine = false;
+            // A UTF-8 BOM (left by some Windows editors) must not eat record #1.
+            if (row.size() >= 3 && row.compare(0, 3, "\xEF\xBB\xBF") == 0) row.erase(0, 3);
+        }
         row = trim(row);
         if (row.empty()) continue;
 
-        try {
-            stringstream ss(row);
-            string idPart, name, agePart, course;
-            if (!getline(ss, idPart, ',')) continue;
-            if (!getline(ss, name, ',')) continue;
-            if (!getline(ss, agePart, ',')) continue;
-            if (!getline(ss, course)) continue;
+        stringstream ss(row);
+        string idPart, name, agePart, course;
+        if (!getline(ss, idPart, ',')) continue;
+        if (!getline(ss, name, ',')) continue;
+        if (!getline(ss, agePart, ',')) continue;
+        if (!getline(ss, course)) continue;
+        if (course.find(',') != string::npos) continue; // extra fields — not our format
 
-            Student s;
-            s.id = stoi(trim(idPart));
-            s.name = trim(name);
-            s.age = stoi(trim(agePart));
-            s.course = trim(course);
-            if (s.name.empty() || s.course.empty()) continue;
-            if (s.age < 1 || s.age > 120) continue;
-            students.push_back(s);
-        } catch (...) {
-            continue; // skip malformed lines, never crash on bad data
-        }
+        Student s;
+        if (!parseIntStrict(idPart, s.id)) continue;   // "12abc" is not an ID
+        if (!parseIntStrict(agePart, s.age)) continue;
+        s.name = trim(name);
+        s.course = trim(course);
+        if (s.name.empty() || s.course.empty()) continue;
+        if (s.age < 1 || s.age > 120) continue;
+        students.push_back(s);
     }
     return students;
 }
@@ -198,9 +235,9 @@ void addStudent(vector<Student>& students) {
 
     Student s;
     s.id = id;
-    s.name = readText("  Name         : ");
+    s.name = readField("  Name         : ");
     s.age = readAge("  Age          : ");
-    s.course = readText("  Course       : ");
+    s.course = readField("  Course       : ");
 
     students.push_back(s);
     sort(students.begin(), students.end(),
@@ -316,9 +353,9 @@ void updateStudent(vector<Student>& students) {
     cout << "  " << line('-') << "\n\n";
     cout << "  Enter the new details:\n";
 
-    s->name = readText("  Name         : ");
+    s->name = readField("  Name         : ");
     s->age = readAge("  Age          : ");
-    s->course = readText("  Course       : ");
+    s->course = readField("  Course       : ");
 
     if (saveRecords(students)) {
         cout << "\n  [OK] Record for ID " << id << " updated.\n";
