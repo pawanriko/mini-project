@@ -1,6 +1,26 @@
 # Mini-Projects
 
+[![Live demo](https://img.shields.io/badge/live-pawanriko.github.io-2ea44f)](https://pawanriko.github.io/mini-project/)
+![Top language](https://img.shields.io/github/languages/top/pawanriko/mini-project)
+![Stars](https://img.shields.io/github/stars/pawanriko/mini-project?style=social)
+
+[![My Skills](https://skillicons.dev/icons?i=html,css,js,cpp,git,github)](https://skillicons.dev)
+
 Small projects I built while learning web development and C++. Each one is in its own folder and each one taught me something different.
+
+## What's inside
+
+```mermaid
+flowchart TD
+    Root([mini-project]) --> DSA[DSA Visualizer<br/>HTML · CSS · JS]
+    Root --> SMS[Student Management System<br/>C++ console app]
+    Root --> Todo[To-Do App<br/>HTML · CSS · JS]
+    Root --> Clock[Digital Clock<br/>HTML · CSS · JS]
+    DSA --> Live[Live on GitHub Pages]
+    SMS --> Live
+    Todo --> Live
+    Clock --> Live
+```
 
 ## The projects
 
